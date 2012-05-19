@@ -1,4 +1,4 @@
-//PRUEBA GIT6
+//PRUEBA GIT7
 
 #include <stdio.h>
 #include <stdlib.h>
