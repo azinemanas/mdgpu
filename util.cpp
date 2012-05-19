@@ -81,6 +81,7 @@ clock_t z_clock() {
 	getrusage(RUSAGE_SELF, &ru);
 
 	return (ru.ru_utime.tv_sec+ru.ru_stime.tv_sec)*1000000+ru.ru_utime.tv_usec+ru.ru_stime.tv_usec;*/
+
 }
 
 #endif
