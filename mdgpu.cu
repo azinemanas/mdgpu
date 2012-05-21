@@ -1004,8 +1004,6 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 		cudaThreadSynchronize();
 		ticksMemcpy2 += toc(tick);
 
-		cudaThreadSynchronize();
-		
 		for (int j = 0; j < nF; j++) {
 
 			if (i < cols(j)) {
@@ -1021,9 +1019,9 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 					tick = tic();
 					mdgpu_cublasXtrsm('R', 'L', 'T', 'N', n-nb, nb-i, 1.0f, &x[i*w+i], w, &x[i*w+i+b2], w);
+					status = cublasGetError();
 					ticksTRSM_GPU += toc(tick);
 					
-					status = cublasGetError();
 					if (status != CUBLAS_STATUS_SUCCESS) {
 						printf("Error en cublaXtrsm()");
 						exit(1);
@@ -1031,9 +1029,9 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 					tick = tic();
 					mdgpu_cublasXgemm('N', 'T', n-nb, n-nb, b2, -1.0f, &x[i*w+i+b2], w, &x[i*w+i+b2], w, 1.0f, &x[(i+b2)*w+i+b2], w);
+					status = cublasGetError();
 					ticksGEMM_GPU += toc(tick);
 					
-					status = cublasGetError();
 					if (status != CUBLAS_STATUS_SUCCESS) {
 						printf("Error en cublaXgemm()");
 						exit(1);
