@@ -903,6 +903,7 @@ __global__ void FactorAux1_GPU_2_device_2(int n, FLOTANTE* x) {
 void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 	clock_t tick;
+	clock_t tick2;
 
 	cublasStatus status;
 
@@ -1004,6 +1005,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 		cudaThreadSynchronize();
 		ticksMemcpy2 += toc(tick);
 
+		tick2 = tic();
 		for (int j = 0; j < nF; j++) {
 
 			if (i < cols(j)) {
@@ -1019,6 +1021,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 					tick = tic();
 					mdgpu_cublasXtrsm('R', 'L', 'T', 'N', n-nb, nb-i, 1.0f, &x[i*w+i], w, &x[i*w+i+b2], w);
+					cudaThreadSynchronize();
 					status = cublasGetError();
 					ticksTRSM_GPU += toc(tick);
 					
@@ -1029,6 +1032,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 					tick = tic();
 					mdgpu_cublasXgemm('N', 'T', n-nb, n-nb, b2, -1.0f, &x[i*w+i+b2], w, &x[i*w+i+b2], w, 1.0f, &x[(i+b2)*w+i+b2], w);
+					cudaThreadSynchronize();
 					status = cublasGetError();
 					ticksGEMM_GPU += toc(tick);
 					
@@ -1041,7 +1045,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 			}
 		}
 		cudaThreadSynchronize();
-		//ticksFactorAux2 += toc(tick);
+		ticksFactorAux2 += toc(tick2);
 	}
 
 	tick = tic();
@@ -1759,28 +1763,29 @@ int main(int argc, char** argv) {
 	printf("MFlops     = %.2f\n", flops/1000000.0);
 	printf("MFlops/s   = %.3f\n", flops/1000000.0/ticks2seg(ticksFactorAux));
 	printf("\n");
-	printf("Total      = %.6f\n", ticks2seg(mainTick));
-	printf("Factor     = %.6f\n", ticks2seg(factorTick));
-	printf("FactorAux  = %.6f\n", ticks2seg(ticksFactorAux));
-	printf("BLAS CPU   = %.6f\n", ticks2seg(ticksFactorAux1));
-	printf("TRSM GPU   = %.6f\n", ticks2seg(ticksTRSM_GPU));
-	printf("GEMM GPU   = %.6f\n", ticks2seg(ticksGEMM_GPU));
-	printf("FactorAux3 = %.6f\n", ticks2seg(ticksFactorAux3));
-	printf("Memcpy     = %.6f\n", ticks2seg(ticksMemcpy));
-	printf("Memcpy2    = %.6f\n", ticks2seg(ticksMemcpy2));
-	printf("Memcpy21   = %.6f\n", ticks2seg(ticksMemcpy21));
-	printf("MemcpyX    = %.6f\n", ticks2seg(ticksMemcpyX));
-	printf("MemcpyT    = %.6f\n", ticks2seg(ticksMemcpy)+ticks2seg(ticksMemcpy2)+ticks2seg(ticksMemcpy21)+ticks2seg(ticksMemcpyX));
-	printf("MemcpyHost = %.6f\n", ticks2seg(ticksMemcpyHost));
-	printf("Malloc     = %.6f\n", ticks2seg(ticksMalloc));
-	printf("MallocGPU  = %.6f\n", ticks2seg(ticksMallocGPU));
-	printf("Free       = %.6f\n", ticks2seg(ticksFree));
-	printf("FreeGPU    = %.6f\n", ticks2seg(ticksFreeGPU));
-	printf("Merge      = %.6f\n", ticks2seg(ticksMerge));
-	printf("GetFk      = %.6f\n", ticks2seg(ticksGetFk));
-	printf("ExtendAdd  = %.6f\n\n", ticks2seg(ticksExtendAdd));
-	printf("Load       = %.6f\n", ticks2seg(loadTick));
-	printf("Symbolic   = %.6f\n", ticks2seg(ticksSymbolic));
+	printf("Total          = %.6f\n", ticks2seg(mainTick));
+	printf("Factor         = %.6f\n", ticks2seg(factorTick));
+	printf("FactorAux      = %.6f\n", ticks2seg(ticksFactorAux));
+	printf("  BLAS CPU     = %.6f\n", ticks2seg(ticksFactorAux1));
+	printf("  BLAS GPU     = %.6f\n", ticks2seg(ticksFactorAux2));
+	printf("    TRSM GPU   = %.6f\n", ticks2seg(ticksTRSM_GPU));
+	printf("    GEMM GPU   = %.6f\n", ticks2seg(ticksGEMM_GPU));
+	printf("  FactorAux3   = %.6f\n", ticks2seg(ticksFactorAux3));
+	printf("Memcpy         = %.6f\n", ticks2seg(ticksMemcpy));
+	printf("Memcpy2        = %.6f\n", ticks2seg(ticksMemcpy2));
+	printf("Memcpy21       = %.6f\n", ticks2seg(ticksMemcpy21));
+	printf("MemcpyX        = %.6f\n", ticks2seg(ticksMemcpyX));
+	printf("MemcpyT        = %.6f\n", ticks2seg(ticksMemcpy)+ticks2seg(ticksMemcpy2)+ticks2seg(ticksMemcpy21)+ticks2seg(ticksMemcpyX));
+	printf("MemcpyHost     = %.6f\n", ticks2seg(ticksMemcpyHost));
+	printf("Malloc         = %.6f\n", ticks2seg(ticksMalloc));
+	printf("MallocGPU      = %.6f\n", ticks2seg(ticksMallocGPU));
+	printf("Free           = %.6f\n", ticks2seg(ticksFree));
+	printf("FreeGPU        = %.6f\n", ticks2seg(ticksFreeGPU));
+	printf("Merge          = %.6f\n", ticks2seg(ticksMerge));
+	printf("GetFk          = %.6f\n", ticks2seg(ticksGetFk));
+	printf("ExtendAdd      = %.6f\n\n", ticks2seg(ticksExtendAdd));
+	printf("Load           = %.6f\n", ticks2seg(loadTick));
+	printf("Symbolic       = %.6f\n", ticks2seg(ticksSymbolic));
 
 	//printf("\ncountExtendAdd   = %li\n", countExtendAdd);
 	//printf("countGetFk         = %i\n", countGetFk);
