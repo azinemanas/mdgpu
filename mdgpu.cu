@@ -1775,7 +1775,7 @@ int main(int argc, char** argv) {
 	printf("  Memcpy2      = %.6f Copia paneles CPU<->GPU\n", ticks2seg(ticksMemcpy2+ticksMemcpy21));
 	//printf("  Memcpy21     = %.6f\n", ticks2seg(ticksMemcpy21));
 	printf("  MemcpyX      = %.6f Copia inicial del frente CPU->GPU\n", ticks2seg(ticksMemcpyX));
-	printf("  Otros = %.6f\n", ticks2seg(ticksMemcpy));
+	printf("  Otros        = %.6f\n", ticks2seg(ticksMemcpy));
 	//("MemcpyHost     = %.6f\n", ticks2seg(ticksMemcpyHost));
 
 	printf("Merge          = %.6f\n", ticks2seg(ticksMerge));
