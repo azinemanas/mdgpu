@@ -1772,10 +1772,10 @@ int main(int argc, char** argv) {
 	printf("    GEMM GPU   = %.6f\n", ticks2seg(ticksGEMM_GPU));
 	printf("  Otros        = %.6f\n", ticks2seg(ticksFactorAux3));
 	printf("Memcpy         = %.6f\n", ticks2seg(ticksMemcpy)+ticks2seg(ticksMemcpy2)+ticks2seg(ticksMemcpy21)+ticks2seg(ticksMemcpyX));
-	printf("  Memcpy       = %.6f\n", ticks2seg(ticksMemcpy));
-	printf("  Memcpy2      = %.6f\n", ticks2seg(ticksMemcpy2));
-	printf("  Memcpy21     = %.6f\n", ticks2seg(ticksMemcpy21));
+	printf("  Memcpy2      = %.6f Copia paneles CPU<->GPU\n", ticks2seg(ticksMemcpy2+ticksMemcpy21));
+	//printf("  Memcpy21     = %.6f\n", ticks2seg(ticksMemcpy21));
 	printf("  MemcpyX      = %.6f Copia inicial del frente CPU->GPU\n", ticks2seg(ticksMemcpyX));
+	printf("  Memcpy otros = %.6f\n", ticks2seg(ticksMemcpy));
 	//("MemcpyHost     = %.6f\n", ticks2seg(ticksMemcpyHost));
 
 	printf("Merge          = %.6f\n", ticks2seg(ticksMerge));
