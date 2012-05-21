@@ -1763,9 +1763,9 @@ int main(int argc, char** argv) {
 	printf("MFlops     = %.2f\n", flops/1000000.0);
 	printf("MFlops/s   = %.3f\n", flops/1000000.0/ticks2seg(ticksFactorAux));
 	printf("\n");
-	printf("Total          = %.6f\n", ticks2seg(mainTick));
-	printf("Factor         = %.6f\tFactorizacion numerica total\n", ticks2seg(factorTick));
-	printf("FactorAux      = %.6f\tFactorizacion numerica solo calculo\n", ticks2seg(ticksFactorAux));
+	printf("Total          = %.6f\n\n", ticks2seg(mainTick));
+	printf("Factor         = %.6f Factorizacion numerica total\n", ticks2seg(factorTick));
+	printf("FactorAux      = %.6f Factorizacion numerica solo calculo\n", ticks2seg(ticksFactorAux));
 	printf("  BLAS CPU     = %.6f\n", ticks2seg(ticksFactorAux1));
 	printf("  BLAS GPU     = %.6f\n", ticks2seg(ticksFactorAux2));
 	printf("    TRSM GPU   = %.6f\n", ticks2seg(ticksTRSM_GPU));
@@ -1775,17 +1775,17 @@ int main(int argc, char** argv) {
 	printf("  Memcpy       = %.6f\n", ticks2seg(ticksMemcpy));
 	printf("  Memcpy2      = %.6f\n", ticks2seg(ticksMemcpy2));
 	printf("  Memcpy21     = %.6f\n", ticks2seg(ticksMemcpy21));
-	printf("  MemcpyX      = %.6f\tCopia inicial del frente CPU->GPU\n", ticks2seg(ticksMemcpyX));
+	printf("  MemcpyX      = %.6f Copia inicial del frente CPU->GPU\n", ticks2seg(ticksMemcpyX));
 	//("MemcpyHost     = %.6f\n", ticks2seg(ticksMemcpyHost));
 
 	printf("Merge          = %.6f\n", ticks2seg(ticksMerge));
-	printf("GetFk          = %.6f\tFormar el frente\n", ticks2seg(ticksGetFk));
-	printf("ExtendAdd      = %.6f\tSuma extendida\n\n", ticks2seg(ticksExtendAdd));
+	printf("GetFk          = %.6f Formar el frente\n", ticks2seg(ticksGetFk));
+	printf("ExtendAdd      = %.6f Suma extendida\n", ticks2seg(ticksExtendAdd));
 
 	printf("Malloc CPU     = %.6f\n", ticks2seg(ticksMalloc));
 	printf("Free CPU       = %.6f\n", ticks2seg(ticksFree));
 	printf("Malloc GPU     = %.6f\n", ticks2seg(ticksMallocGPU));
-	printf("Free GPU       = %.6f\n", ticks2seg(ticksFreeGPU));
+	printf("Free GPU       = %.6f\n\n", ticks2seg(ticksFreeGPU));
 	
 	printf("Load           = %.6f\n", ticks2seg(loadTick));
 	printf("Symbolic       = %.6f\n", ticks2seg(ticksSymbolic));
