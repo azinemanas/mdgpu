@@ -958,7 +958,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				
 				bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
 				//cutilSafeCall(
-					cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost) 
+					cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
 				//);
 			}
 
@@ -989,7 +989,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				FLOTANTE* bloque = bloques[j];
 				
 				//cutilSafeCall(
-					cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice)
+					cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice);
 				//);
 			}		
 		
@@ -1045,7 +1045,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				
 				bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
 				//cutilSafeCall(
-					cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost) 
+					cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost); 
 				//);
 			}
 		}
@@ -1089,7 +1089,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				FLOTANTE* bloque = bloques[j];
 				
 				//cutilSafeCall(
-					cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice)
+					cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice);
 				//);
 			}
 		}
