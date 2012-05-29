@@ -994,6 +994,8 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 				FLOTANTE* bloque = bloques[j];
 				
+				tick = tic();
+				
 				int cb = 0;
 				for (int c = 0; c < b2; c++) {
 					mdgpu_cblasXscal(b2-c, 1.0/sqrt(bloque[cb+c]), &bloque[cb+c], 1);
@@ -1001,8 +1003,9 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 					cb += b;
 				}
 				
-				cudaThreadSynchronize();
+				ticksFactorAux1 += toc(tick);
 				
+				cudaThreadSynchronize();
 				
 			}			
 		
