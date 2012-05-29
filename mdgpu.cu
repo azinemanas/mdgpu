@@ -957,20 +957,40 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				FLOTANTE* bloque = bloques[j];
 				
 				bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
-				//cutilSafeCall(
-					cudaMemcpy2DAsync(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
-				//);
 				
-				cudaThreadSynchronize();
+				if (j == 0) {
+					
+					//cutilSafeCall(
+						cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
+					//);					
+					
+				} 
+				
 			}
 
 			if (i < cols(j)) {
 
+				if (j < nF-1) {
+				
+					int j2 = j+1;
+					FLOTANTE* x = F[j2]->hd_frente->x;
+					int w = F[j2]->hd_frente->w;
+					int nb = min(i+b,cols(j2));
+					int b2 = nb-i;
+					FLOTANTE* bloque = bloques[j2];
+					
+					bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
+					
+					//cutilSafeCall(
+						cudaMemcpy2DAsync(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
+					//);					
+				
+				}
+			
 				int nb = min(i+b,cols(j));
 				int b2 = nb-i;
 
 				FLOTANTE* bloque = bloques[j];
-
 				
 				int cb = 0;
 				for (int c = 0; c < b2; c++) {
@@ -978,6 +998,8 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 					mdgpu_cblasXsyr(CblasColMajor, CblasLower, b2-c-1, -1.0, &bloque[cb+c+1], 1, &bloque[cb+b+c+1], b);
 					cb += b;
 				}
+				
+				cudaThreadSynchronize();
 			}			
 		
 			if (i < cols(j)) {
