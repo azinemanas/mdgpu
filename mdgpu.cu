@@ -958,8 +958,10 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				
 				bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
 				//cutilSafeCall(
-					cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
+					cudaMemcpy2DAsync(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
 				//);
+				
+				cudaThreadSynchronize();
 			}
 
 			if (i < cols(j)) {
