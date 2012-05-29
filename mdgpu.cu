@@ -984,7 +984,8 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 					tick = tic();
 					//cutilSafeCall(
 						cudaMemcpy2DAsync(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
-					//);					
+					//);
+					cudaThreadSynchronize();
 					ticksMemcpy21 += toc(tick);
 				}
 			
