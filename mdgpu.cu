@@ -947,7 +947,93 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 	for (int i = 0; i < max_cols; i += b) {
 
-		tick = tic();
+		for (int j = 0; j < nF; j++) {
+		
+			if (i < cols(j)) {
+				FLOTANTE* x = F[j]->hd_frente->x;
+				int w = F[j]->hd_frente->w;
+				int nb = min(i+b,cols(j));
+				int b2 = nb-i;
+				FLOTANTE* bloque = bloques[j];
+				
+				bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
+				//cutilSafeCall(
+					cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost) 
+				//);
+			}
+
+			if (i < cols(j)) {
+
+				int nb = min(i+b,cols(j));
+				int b2 = nb-i;
+
+				FLOTANTE* bloque = bloques[j];
+
+				
+				int cb = 0;
+				for (int c = 0; c < b2; c++) {
+					mdgpu_cblasXscal(b2-c, 1.0/sqrt(bloque[cb+c]), &bloque[cb+c], 1);
+					mdgpu_cblasXsyr(CblasColMajor, CblasLower, b2-c-1, -1.0, &bloque[cb+c+1], 1, &bloque[cb+b+c+1], b);
+					cb += b;
+				}
+			}			
+		
+			if (i < cols(j)) {
+
+				FLOTANTE* x = F[j]->hd_frente->x;
+				int w = F[j]->hd_frente->w;
+
+				int nb = min(i+b,cols(j));
+				int b2 = nb-i;
+
+				FLOTANTE* bloque = bloques[j];
+				
+				//cutilSafeCall(
+					cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice)
+				//);
+			}		
+		
+			if (i < cols(j)) {
+
+				FLOTANTE* x = F[j]->hd_frente->x;
+				int w = F[j]->hd_frente->w;
+				int n = F[j]->hd_frente->n;
+
+				int nb = min(i+b,cols(j));
+				int b2 = nb-i;
+
+				if (n-nb > 0) {
+
+					tick = tic();
+					mdgpu_cublasXtrsm('R', 'L', 'T', 'N', n-nb, nb-i, 1.0f, &x[i*w+i], w, &x[i*w+i+b2], w);
+					cudaThreadSynchronize();
+					status = cublasGetError();
+					ticksTRSM_GPU += toc(tick);
+					
+					if (status != CUBLAS_STATUS_SUCCESS) {
+						printf("Error en cublaXtrsm()");
+						exit(1);
+					}
+
+					tick = tic();
+					mdgpu_cublasXgemm('N', 'T', n-nb, n-nb, b2, -1.0f, &x[i*w+i+b2], w, &x[i*w+i+b2], w, 1.0f, &x[(i+b2)*w+i+b2], w);
+					cudaThreadSynchronize();
+					status = cublasGetError();
+					ticksGEMM_GPU += toc(tick);
+					
+					if (status != CUBLAS_STATUS_SUCCESS) {
+						printf("Error en cublaXgemm()");
+						exit(1);
+					}
+
+				}
+			}
+		
+			cudaThreadSynchronize();
+		}
+	
+		/*tick = tic();
+		
 		for (int j = 0; j < nF; j++) {
 
 			if (i < cols(j)) {
@@ -958,14 +1044,16 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				FLOTANTE* bloque = bloques[j];
 				
 				bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
-				/*cutilSafeCall(*/ cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost) /*)*/;
+				//cutilSafeCall(
+					cudaMemcpy2D(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost) 
+				//);
 			}
 		}
 
 		cudaThreadSynchronize();
 		ticksMemcpy21 += toc(tick);
-
 		tick = tic();
+
 		for (int j = 0; j < nF; j++) {
 
 			if (i < cols(j)) {
@@ -980,13 +1068,14 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				for (int c = 0; c < b2; c++) {
 					mdgpu_cblasXscal(b2-c, 1.0/sqrt(bloque[cb+c]), &bloque[cb+c], 1);
 					mdgpu_cblasXsyr(CblasColMajor, CblasLower, b2-c-1, -1.0, &bloque[cb+c+1], 1, &bloque[cb+b+c+1], b);
-					cb += b; /* cb = c*b */
+					cb += b;
 				}
 			}
 		}
-		ticksFactorAux1 += toc(tick);
 
+		ticksFactorAux1 += toc(tick);
 		tick = tic();
+
 		for (int j = 0; j < nF; j++) {
 
 			if (i < cols(j)) {
@@ -999,13 +1088,16 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 				FLOTANTE* bloque = bloques[j];
 				
-				/*cutilSafeCall(*/ cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice) /*)*/;
+				//cutilSafeCall(
+					cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice)
+				//);
 			}
 		}
+		
 		cudaThreadSynchronize();
 		ticksMemcpy2 += toc(tick);
-
 		tick2 = tic();
+
 		for (int j = 0; j < nF; j++) {
 
 			if (i < cols(j)) {
@@ -1044,8 +1136,9 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				}
 			}
 		}
+		
 		cudaThreadSynchronize();
-		ticksFactorAux2 += toc(tick2);
+		ticksFactorAux2 += toc(tick2);*/
 	}
 
 	tick = tic();
