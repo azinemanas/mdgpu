@@ -970,8 +970,6 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 			if (i < cols(j)) {
 
-				tick = tic();
-			
 				if (j < nF-1) {
 				
 					int j2 = j+1;
@@ -983,10 +981,11 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 					
 					bytesMemcpy2 += b2*b2*sizeof(FLOTANTE);
 					
+					tick = tic();
 					//cutilSafeCall(
 						cudaMemcpy2DAsync(bloque, b*sizeof(FLOTANTE), &x[i*w+i], w*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyDeviceToHost);
 					//);					
-				
+					ticksMemcpy21 += toc(tick);
 				}
 			
 				int nb = min(i+b,cols(j));
@@ -1003,7 +1002,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				
 				cudaThreadSynchronize();
 				
-				ticksMemcpy21 += toc(tick);
+				
 			}			
 		
 			if (i < cols(j)) {
