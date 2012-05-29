@@ -970,6 +970,8 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 			if (i < cols(j)) {
 
+				tick = tic();
+			
 				if (j < nF-1) {
 				
 					int j2 = j+1;
@@ -1000,6 +1002,8 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 				}
 				
 				cudaThreadSynchronize();
+				
+				ticksMemcpy21 += toc(tick);
 			}			
 		
 			if (i < cols(j)) {
