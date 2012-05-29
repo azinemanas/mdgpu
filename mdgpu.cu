@@ -1019,9 +1019,11 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 				FLOTANTE* bloque = bloques[j];
 				
+				tick = tic();
 				//cutilSafeCall(
 					cudaMemcpy2D(&x[i*w+i], w*sizeof(FLOTANTE), bloque, b*sizeof(FLOTANTE), b2*sizeof(FLOTANTE), b2, cudaMemcpyHostToDevice);
 				//);
+				ticksMemcpy2 += toc(tick);
 			}		
 		
 			if (i < cols(j)) {
