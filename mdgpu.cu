@@ -1180,7 +1180,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 
 	printf("\n");
 	for (int j = 0; j < nF; j++) {
-		printf("Procesando frente %i, size = %i, tiempo = %f\n", F[j]->h_frente->k, F[j]->h_frente->n, ticks2seg(F[j]->tiempoFact));
+		printf("Procesando frente %i, size = %i, cols = %i, tiempo = %.10f\n", F[j]->h_frente->k, F[j]->h_frente->n, F[j]->h_frente->offset, ticks2seg(F[j]->tiempoFact));
 	}	
 	
 	tick = tic();
