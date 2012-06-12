@@ -945,6 +945,10 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 		}
 	}
 
+	for (int j = 0; j < nF; j++) {
+		F[j]->tiempoFact = 0;
+	}
+	
 	for (int i = 0; i < max_cols; i += b) {
 
 		for (int j = 0; j < nF; j++) {
@@ -1066,7 +1070,7 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 		
 			cudaThreadSynchronize();
 			
-			F[j]->tiempoFact = toc(tini);
+			F[j]->tiempoFact += toc(tini);
 		}
 	
 		/*tick = tic();
