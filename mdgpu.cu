@@ -945,6 +945,11 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 		}
 	}
 
+	printf("\n");
+	for (int j = 0; j < nF; j++) {
+		printf("Procesando frente %i, size = %i\n", F[j]->h_frente->k, F[j]->h_frente->n);
+	}
+	
 	for (int i = 0; i < max_cols; i += b) {
 
 		for (int j = 0; j < nF; j++) {
