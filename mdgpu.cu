@@ -945,14 +945,11 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 		}
 	}
 
-	printf("\n");
-	for (int j = 0; j < nF; j++) {
-		printf("Procesando frente %i, size = %i\n", F[j]->h_frente->k, F[j]->h_frente->n);
-	}
-	
 	for (int i = 0; i < max_cols; i += b) {
 
 		for (int j = 0; j < nF; j++) {
+		
+			clock_t tini = tic();
 		
 			if (i < cols(j)) {
 				FLOTANTE* x = F[j]->hd_frente->x;
@@ -1068,6 +1065,8 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 			}
 		
 			cudaThreadSynchronize();
+			
+			F[j]->tiempoFact = toc(tini);
 		}
 	
 		/*tick = tic();
@@ -1179,6 +1178,11 @@ void FactorAux_GPU_2(Frente** F, int nF, cs* spL) {
 		ticksFactorAux2 += toc(tick2);*/
 	}
 
+	printf("\n");
+	for (int j = 0; j < nF; j++) {
+		printf("Procesando frente %i, size = %i, tiempo = %f\n", F[j]->h_frente->k, F[j]->h_frente->n, ticks2seg(F[j]->tiempoFact));
+	}	
+	
 	tick = tic();
 
 	int* spL_i;

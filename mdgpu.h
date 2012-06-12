@@ -21,6 +21,9 @@ typedef struct {
 	Matriz* h_frente;
 	Matriz* hd_frente;
 	//Matriz* d_frente;
+	
+	clock_t tiempoFact;
+	
 } Frente;
 
 void MatrizAlloc(Matriz* m);
